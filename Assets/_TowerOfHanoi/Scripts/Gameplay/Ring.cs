@@ -7,11 +7,9 @@ namespace TowerOfHanoi.Gameplay
     public class Ring : MonoBehaviour
     {
         public MeshFilter MeshFilter { get; private set; }
-
         private void Start()
         {
             MeshFilter = GetComponent<MeshFilter>();
         }
-
     }
 }
