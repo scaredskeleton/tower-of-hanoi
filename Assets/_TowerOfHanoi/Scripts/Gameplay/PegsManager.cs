@@ -17,10 +17,7 @@ namespace TowerOfHanoi.Gameplay
         public float HoverPointOffset { get => _hoverPointOffset; }
         public List<Peg> Pegs { get => _pegs; }
 
-        private void Start()
-        {
-            UpdatePegsProportions();
-        }
+        private void Start() => UpdatePegsProportions();
 
         private void UpdatePegsProportions()
         {

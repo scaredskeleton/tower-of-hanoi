@@ -12,10 +12,7 @@ namespace TowerOfHanoi.Gameplay
         public Vector3 RingsSpawnpoint { get; private set; }
         public Vector3 RingsHoverPoint { get; private set; }
 
-        private void Start()
-        {
-            SetRingsSpawnpoint();
-        }
+        private void Start() => SetRingsSpawnpoint();
 
         private void SetRingsSpawnpoint()
         {
