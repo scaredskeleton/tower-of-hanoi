@@ -6,14 +6,10 @@ namespace TowerOfHanoi.Gameplay.PlayerControls
     public class GameplayMouseInputs : MonoBehaviour
     {
         private PlayerInputs _input;
-        private Camera _camera;
-        private bool _hasSelection;
-        private Ring _selectedRing;
 
         private void Awake()
         {
             _input = GameplayManager.Instance.PlayerInputs;
-            _camera = GameplayManager.Instance.GameplayCamera;
         }
 
         private void OnEnable()
@@ -31,51 +27,18 @@ namespace TowerOfHanoi.Gameplay.PlayerControls
 
         private void OnSelectPerformed(CallbackContext context) 
         {
-            if (!_hasSelection)
-                TrySelectingRing();
+            if (!GameplayManager.Instance.HasRingSelected)
+                GameplayManager.Instance.TrySelectingRing();
             else
-                TryPlacingRing();
+                GameplayManager.Instance.TryPlacingRing();
         }
 
         private void OnCancelPerformed(CallbackContext context) 
         {
-            if (!_hasSelection)
+            if (!GameplayManager.Instance.HasRingSelected)
                 return;
 
-            CancelRingSelection();
-        }
-
-        private void TrySelectingRing()
-        {
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Ring ring = hit.transform.GetComponent<Ring>();
-
-                if (ring != null && ring.IsToppestRing())
-                {
-                    _selectedRing = ring;
-                    _selectedRing.Selected();
-                    _hasSelection = true;
-                }
-            }
-        }
-
-        private void TryPlacingRing()
-        {
-            if (GameplayManager.Instance.RingsManager.IsLegalMove(_selectedRing))
-            {
-                _selectedRing.PlaceToNearestPeg();
-                _hasSelection = false;
-                _selectedRing = null;
-            }
-        }
-
-        private void CancelRingSelection()
-        {
-            _selectedRing.ReturnToCurrentPeg();
-            _hasSelection = false;
-            _selectedRing = null;
+            GameplayManager.Instance.CancelRingSelection();
         }
     }
 }

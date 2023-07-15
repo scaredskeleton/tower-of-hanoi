@@ -1,15 +1,11 @@
-using System;
 using System.Linq;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
 {
-    [RequireComponent(typeof(MeshRenderer))]
-    [RequireComponent(typeof(MeshFilter))]
     public class Ring : MonoBehaviour
     {
         public int Index { get; private set; }
-        public MeshFilter MeshFilter { get; private set; }
         public Peg CurrentPeg { get; private set; }
         public Peg TargetPeg { get; private set; }
 
@@ -20,7 +16,6 @@ namespace TowerOfHanoi.Gameplay
         private void Start()
         {
             _transform = transform;
-            MeshFilter = GetComponent<MeshFilter>();
         }
 
         private void Update()

@@ -12,7 +12,7 @@ namespace TowerOfHanoi.Gameplay
         [SerializeField] private float _radiusIncrement;
         [SerializeField] private Ring _ringPrefab;
         
-        public float Count { get => _count; }
+        public int Count { get => _count; }
         public float Thickness { get => _thickness; }
         public float MinRadius { get => _minRadius; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
@@ -34,20 +34,6 @@ namespace TowerOfHanoi.Gameplay
             {
                 GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(CreateRingObject(i));
             }
-        }
-
-        public bool IsLegalMove(Ring ring)
-        {
-            if (ring.TargetPeg.Rings.Count == 0)
-                return true;
-            else if (ring.TargetPeg.Rings.LastOrDefault() == null)
-                return false;
-            else if (ring.Index == ring.TargetPeg.Rings.LastOrDefault().Index)
-                return true;
-            else if (ring.Index > ring.TargetPeg.Rings.LastOrDefault().Index)
-                return true;
-            else
-                return false;
         }
 
         private Ring CreateRingObject(int ringCount)
