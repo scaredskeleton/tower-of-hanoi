@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -31,17 +32,32 @@ namespace TowerOfHanoi.Gameplay
         {
             for (int i = 0; i < _count; ++i)
             {
-                Rings.Add(CreateRingObject(i));
+                GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(CreateRingObject(i));
             }
+        }
+
+        public bool IsLegalMove(Ring ring)
+        {
+            if (ring.TargetPeg.Rings.Count == 0)
+                return true;
+            else if (ring.TargetPeg.Rings.LastOrDefault() == null)
+                return false;
+            else if (ring.Index == ring.TargetPeg.Rings.LastOrDefault().Index)
+                return true;
+            else if (ring.Index > ring.TargetPeg.Rings.LastOrDefault().Index)
+                return true;
+            else
+                return false;
         }
 
         private Ring CreateRingObject(int ringCount)
         {
-            Vector3 spawnpoint = GameplayManager.Instance.PegsManager.Pegs[0].RingsSpawnpoint;
-            spawnpoint.y += _thickness + (_thickness * 2 * ringCount);
+            Ring ring = Instantiate(_ringPrefab);
 
-            Ring ring = Instantiate(_ringPrefab, spawnpoint, Quaternion.identity);
+            ring.name = $"Ring #{ringCount + 1}";
             SetRingRadius(ring, _count - ringCount);
+            ring.SetIndex(ringCount);
+            Rings.Add(ring);
 
             return ring;
         }

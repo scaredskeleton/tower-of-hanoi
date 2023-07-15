@@ -6,9 +6,18 @@
             "id": "270a1410-b9bf-45e1-a1f2-2a0a1e174f67",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "Select",
                     "type": "Button",
                     "id": "f0645725-5754-4f5c-8f31-e9d83674deb8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "58ae0d83-d552-4fc9-b85c-c00e4caa2632",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -19,11 +28,22 @@
                 {
                     "name": "",
                     "id": "0b1dd67b-ccda-4f19-8c73-bbb42a2c5d6f",
-                    "path": "",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8d87df53-8dde-4b8d-a34c-633e7a835910",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

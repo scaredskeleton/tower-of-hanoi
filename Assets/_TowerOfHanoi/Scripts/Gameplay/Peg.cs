@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -11,8 +12,41 @@ namespace TowerOfHanoi.Gameplay
         public Transform Pole { get => _pole; }
         public Vector3 RingsSpawnpoint { get; private set; }
         public Vector3 RingsHoverPoint { get; private set; }
+        public List<Ring> Rings { get; private set; } = new List<Ring>();
 
         private void Start() => SetRingsSpawnpoint();
+
+        public Vector3 GetPlacePoint(bool isReturning = false)
+        {
+            int ringCount = Rings.Count;
+
+            if (isReturning)
+                ringCount -= 1;
+
+            float ringThickness = GameplayManager.Instance.RingsManager.Thickness;
+
+            float placePointY = RingsSpawnpoint.y + ringThickness + (ringThickness * 2 * ringCount);
+            Vector3 placePoint = new Vector3(RingsSpawnpoint.x, placePointY, RingsSpawnpoint.z);
+
+            return placePoint;
+        }
+
+        public void PlaceRing(Ring ring)
+        {
+            ring.transform.position = GetPlacePoint();
+            ring.SetPeg(this);
+            Rings.Add(ring);
+        }
+
+        public void RemoveRing(Ring ring)
+        {
+            Rings.Remove(ring);
+        }
+
+        public void ReturnRing(Ring ring)
+        {
+            ring.transform.position = GetPlacePoint(true);
+        }
 
         private void SetRingsSpawnpoint()
         {

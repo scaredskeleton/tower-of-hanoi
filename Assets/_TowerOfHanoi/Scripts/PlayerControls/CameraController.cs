@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
-namespace TowerOfHanoi.PlayerControls
+namespace TowerOfHanoi.Gameplay.PlayerControls
 {
     public class CameraController : MonoBehaviour
     {
@@ -17,13 +16,12 @@ namespace TowerOfHanoi.PlayerControls
 
         private void Awake()
         {
-            _input = new PlayerInputs();
+            _input = GameplayManager.Instance.PlayerInputs;
             _transform = transform;
         }
 
         private void OnEnable()
         {
-            _input.Enable();
             _input.Camera.Orbit.performed += OnOrbitPerformed;
             _input.Camera.Orbit.canceled += OnOrbitCanceled;
             _input.Camera.Pan.performed += OnPanPerformed;
@@ -32,7 +30,6 @@ namespace TowerOfHanoi.PlayerControls
 
         private void OnDisable()
         {
-            _input.Disable();
             _input.Camera.Orbit.performed -= OnOrbitPerformed;
             _input.Camera.Orbit.canceled -= OnOrbitCanceled;
             _input.Camera.Pan.performed -= OnPanPerformed;
@@ -50,13 +47,13 @@ namespace TowerOfHanoi.PlayerControls
             _transform.position += (Vector3)_panVector * _panSpeed * Time.deltaTime;
         }
 
-        private void OnOrbitPerformed(InputAction.CallbackContext context) => _orbitVector = context.ReadValue<Vector2>();
+        private void OnOrbitPerformed(CallbackContext context) => _orbitVector = context.ReadValue<Vector2>();
 
-        private void OnOrbitCanceled(InputAction.CallbackContext context) => _orbitVector = Vector2.zero;
+        private void OnOrbitCanceled(CallbackContext context) => _orbitVector = Vector2.zero;
 
-        private void OnPanPerformed(InputAction.CallbackContext context) => _panVector = context.ReadValue<Vector2>();
+        private void OnPanPerformed(CallbackContext context) => _panVector = context.ReadValue<Vector2>();
 
-        private void OnPanCanceled(InputAction.CallbackContext context) => _panVector = Vector2.zero;
+        private void OnPanCanceled(CallbackContext context) => _panVector = Vector2.zero;
 
     }
 }

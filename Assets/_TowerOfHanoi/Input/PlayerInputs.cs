@@ -28,9 +28,18 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
             ""id"": ""270a1410-b9bf-45e1-a1f2-2a0a1e174f67"",
             ""actions"": [
                 {
-                    ""name"": ""New action"",
+                    ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""f0645725-5754-4f5c-8f31-e9d83674deb8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""58ae0d83-d552-4fc9-b85c-c00e4caa2632"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -41,11 +50,22 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0b1dd67b-ccda-4f19-8c73-bbb42a2c5d6f"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d87df53-8dde-4b8d-a34c-633e7a835910"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -846,7 +866,8 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
 }");
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
-        m_Gameplay_Newaction = m_Gameplay.FindAction("New action", throwIfNotFound: true);
+        m_Gameplay_Select = m_Gameplay.FindAction("Select", throwIfNotFound: true);
+        m_Gameplay_Cancel = m_Gameplay.FindAction("Cancel", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Orbit = m_Camera.FindAction("Orbit", throwIfNotFound: true);
@@ -922,12 +943,14 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
     // Gameplay
     private readonly InputActionMap m_Gameplay;
     private IGameplayActions m_GameplayActionsCallbackInterface;
-    private readonly InputAction m_Gameplay_Newaction;
+    private readonly InputAction m_Gameplay_Select;
+    private readonly InputAction m_Gameplay_Cancel;
     public struct GameplayActions
     {
         private @PlayerInputs m_Wrapper;
         public GameplayActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Newaction => m_Wrapper.m_Gameplay_Newaction;
+        public InputAction @Select => m_Wrapper.m_Gameplay_Select;
+        public InputAction @Cancel => m_Wrapper.m_Gameplay_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -937,16 +960,22 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_GameplayActionsCallbackInterface != null)
             {
-                @Newaction.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNewaction;
-                @Newaction.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNewaction;
-                @Newaction.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnNewaction;
+                @Select.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
+                @Select.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
+                @Select.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSelect;
+                @Cancel.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Newaction.started += instance.OnNewaction;
-                @Newaction.performed += instance.OnNewaction;
-                @Newaction.canceled += instance.OnNewaction;
+                @Select.started += instance.OnSelect;
+                @Select.performed += instance.OnSelect;
+                @Select.canceled += instance.OnSelect;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -1144,7 +1173,8 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
     }
     public interface IGameplayActions
     {
-        void OnNewaction(InputAction.CallbackContext context);
+        void OnSelect(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {
