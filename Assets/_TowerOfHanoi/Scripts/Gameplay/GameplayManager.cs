@@ -8,12 +8,14 @@ namespace TowerOfHanoi.Gameplay
         public static GameplayManager Instance { get; private set; }
         public PegsManager PegsManager { get; private set; }
         public RingsManager RingsManager { get; private set; }
+        public HUD HUD { get => _HUD; }
         public PlayerInputs PlayerInputs { get; private set; }
         public Camera GameplayCamera { get => _gameplayCamera; }
         public Ring SelectedRing { get; private set; }
         public bool HasRingSelected { get => SelectedRing != null; }
 
         [SerializeField] private Camera _gameplayCamera;
+        [SerializeField] private HUD _HUD;
 
         private void Awake()
         {
@@ -39,15 +41,28 @@ namespace TowerOfHanoi.Gameplay
             PlayerInputs.Disable();
         }
 
+        public void Play()
+        {
+            PegsManager.Initialize();
+            RingsManager.Initialize();
+            HUD.UpdateOptimalMoveCounter();
+        }
+
         public bool IsLegalMove()
         {
             if (SelectedRing.TargetPeg.Rings.Count == 0)
                 return true;
             else if (SelectedRing.TargetPeg.Rings.LastOrDefault() == null)
                 return false;
-            else if (SelectedRing.Index == SelectedRing.TargetPeg.Rings.LastOrDefault().Index)
-                return true;
             else if (SelectedRing.Index > SelectedRing.TargetPeg.Rings.LastOrDefault().Index)
+                return true;
+            else
+                return false;
+        }
+
+        public bool IsReturningMove()
+        {
+            if (SelectedRing.Index == SelectedRing.TargetPeg.Rings.LastOrDefault().Index)
                 return true;
             else
                 return false;
@@ -71,6 +86,16 @@ namespace TowerOfHanoi.Gameplay
         public void TryPlacingRing()
         {
             if (IsLegalMove())
+            {
+                PlaceRing();
+
+                MoveCounter.CurrentMoveCount++;
+                HUD.UpdateMoveCounter();
+            }
+            else if (IsReturningMove())
+                PlaceRing();
+
+            void PlaceRing()
             {
                 SelectedRing.PlaceToNearestPeg();
                 SelectedRing = null;

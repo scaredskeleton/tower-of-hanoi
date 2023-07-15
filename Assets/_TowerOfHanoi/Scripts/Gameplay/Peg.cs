@@ -48,6 +48,8 @@ namespace TowerOfHanoi.Gameplay
             ring.transform.position = GetPlacePoint(true);
         }
 
+        public void Clear() => Rings.Clear();
+
         private void SetRingsSpawnpoint()
         {
             float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness + _base.position.y;

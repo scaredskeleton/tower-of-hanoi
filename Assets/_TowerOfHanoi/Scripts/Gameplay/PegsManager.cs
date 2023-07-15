@@ -18,9 +18,13 @@ namespace TowerOfHanoi.Gameplay
         public List<Peg> Pegs { get => _pegs; }
         public Peg StartingPeg { get => Pegs[0]; }
 
-        private void Start() => UpdatePegsProportions();
+        public void Initialize()
+        {
+            UpdatePegsProportions();
+            ClearPegs();
+        }
 
-        private void UpdatePegsProportions()
+        public void UpdatePegsProportions()
         {
             foreach (var peg in _pegs)
             {
@@ -32,6 +36,14 @@ namespace TowerOfHanoi.Gameplay
 
                 float baseOffset = (_baseThickness * 2) + PegHeight;
                 peg.Pole.localPosition = new Vector3(0, baseOffset, 0);
+            }
+        }
+
+        private void ClearPegs()
+        {
+            foreach (Peg peg in _pegs)
+            {
+                peg.Clear();
             }
         }
     }

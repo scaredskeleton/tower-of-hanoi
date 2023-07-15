@@ -17,9 +17,9 @@ namespace TowerOfHanoi.Gameplay
         public float MinRadius { get => _minRadius; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
 
-        private void Start()
+        public void Initialize()
         {
-            if (Rings != null || Rings.Count > 0)
+            if (Rings  == null || Rings.Count == 0)
                 GenerateRings();
             else
             {
