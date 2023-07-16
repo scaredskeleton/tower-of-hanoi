@@ -36,17 +36,14 @@ namespace TowerOfHanoi.Gameplay
             ring.transform.position = GetPlacePoint();
             ring.SetPeg(this);
             Rings.Add(ring);
+
+            if (this == GameplayManager.Instance.PegsManager.GoalPeg || ring == GameplayManager.Instance.RingsManager.LastRing)
+                GameplayManager.Instance.CheckIfFinished();
         }
 
-        public void RemoveRing(Ring ring)
-        {
-            Rings.Remove(ring);
-        }
+        public void RemoveRing(Ring ring) => Rings.Remove(ring);
 
-        public void ReturnRing(Ring ring)
-        {
-            ring.transform.position = GetPlacePoint(true);
-        }
+        public void ReturnRing(Ring ring) => ring.transform.position = GetPlacePoint(true);
 
         public void Clear() => Rings.Clear();
 

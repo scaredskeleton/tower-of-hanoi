@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TowerOfHanoi.Core;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -16,6 +17,7 @@ namespace TowerOfHanoi.Gameplay
         public float Thickness { get => _thickness; }
         public float MinRadius { get => _minRadius; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
+        public Ring LastRing { get => Rings.Last(); }
 
         public void Initialize()
         {
@@ -63,5 +65,7 @@ namespace TowerOfHanoi.Gameplay
 
             Rings.Clear();
         }
+
+        public void UpdateRingsCount() => _count += GameData.GameLevel - 1;
     }
 }

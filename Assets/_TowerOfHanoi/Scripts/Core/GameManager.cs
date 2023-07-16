@@ -8,7 +8,7 @@ namespace TowerOfHanoi.Core
         public static GameManager Instance { get; private set; }
 
         [SerializeField] GameObject _mainMenuCanvas;
-
+         
         private void Awake()
         {
             if (Instance != null && Instance != this)

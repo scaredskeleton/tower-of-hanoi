@@ -1130,6 +1130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameplayCamera: {fileID: 963194227}
   _HUD: {fileID: 984137199}
+  _mouseInputs: {fileID: 1198901461}
 --- !u!1001 &1430973906
 PrefabInstance:
   m_ObjectHideFlags: 0

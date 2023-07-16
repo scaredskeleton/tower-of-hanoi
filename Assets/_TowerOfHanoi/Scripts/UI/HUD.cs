@@ -18,14 +18,14 @@ namespace TowerOfHanoi.Gameplay
             
         }
 
-        public void UpdateMoveCounter()
+        public void Initialize()
         {
-            _moveCounter.text = MoveCounter.CurrentMoveCount.ToString();
+            UpdateMoveCounter();
+            UpdateOptimalMoveCounter();
         }
 
-        public void UpdateOptimalMoveCounter()
-        {
-            _optimalMoveCounter.text = $"Optimal Move #: {MoveCounter.OptimalMoveCount}";
-        }
+        public void UpdateMoveCounter() => _moveCounter.text = MoveCounter.CurrentMoveCount.ToString();
+
+        public void UpdateOptimalMoveCounter() => _optimalMoveCounter.text = $"Optimal Move #: {MoveCounter.OptimalMoveCount}";
     }
 }

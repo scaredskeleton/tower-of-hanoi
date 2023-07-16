@@ -1,4 +1,6 @@
 using System.Linq;
+using TowerOfHanoi.Core;
+using TowerOfHanoi.Gameplay.PlayerControls;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -16,6 +18,7 @@ namespace TowerOfHanoi.Gameplay
 
         [SerializeField] private Camera _gameplayCamera;
         [SerializeField] private HUD _HUD;
+        [SerializeField] private GameplayMouseInputs _mouseInputs;
 
         private void Awake()
         {
@@ -43,9 +46,10 @@ namespace TowerOfHanoi.Gameplay
 
         public void Play()
         {
+            MoveCounter.Reset();
             PegsManager.Initialize();
             RingsManager.Initialize();
-            HUD.UpdateOptimalMoveCounter();
+            HUD.Initialize();
         }
 
         public bool IsLegalMove()
@@ -87,10 +91,10 @@ namespace TowerOfHanoi.Gameplay
         {
             if (IsLegalMove())
             {
-                PlaceRing();
-
                 MoveCounter.CurrentMoveCount++;
                 HUD.UpdateMoveCounter();
+             
+                PlaceRing();
             }
             else if (IsReturningMove())
                 PlaceRing();
@@ -106,6 +110,24 @@ namespace TowerOfHanoi.Gameplay
         {
             SelectedRing.ReturnToCurrentPeg();
             SelectedRing = null;
+        }
+
+        public void CheckIfFinished()
+        {
+            if (PegsManager.EvaluateGoalPeg())
+                LevelFinished();
+        }
+
+        public void LevelFinished()
+        {
+            NextLevel();
+        }
+
+        public void NextLevel()
+        {
+            GameData.GameLevel++;
+            RingsManager.UpdateRingsCount();
+            Play();
         }
     }
 }

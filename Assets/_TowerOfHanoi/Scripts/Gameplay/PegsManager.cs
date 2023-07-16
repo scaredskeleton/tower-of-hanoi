@@ -1,22 +1,24 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
 {
     public class PegsManager : MonoBehaviour
     {
-        [SerializeField] private float _pegRadius;
-        [SerializeField] private float _minBaseRadius;
-        [SerializeField] private float _baseThickness;
-        [SerializeField] private float _hoverPointOffset;
-        [SerializeField] private List<Peg> _pegs;
-
         public float MinBaseRadius { get => _minBaseRadius; }
         public float BaseThickness { get => _baseThickness; }
         public float PegHeight { get; private set; }
         public float HoverPointOffset { get => _hoverPointOffset; }
         public List<Peg> Pegs { get => _pegs; }
         public Peg StartingPeg { get => Pegs[0]; }
+        public Peg GoalPeg { get => Pegs.Last(); }
+
+        [SerializeField] private float _pegRadius;
+        [SerializeField] private float _minBaseRadius;
+        [SerializeField] private float _baseThickness;
+        [SerializeField] private float _hoverPointOffset;
+        [SerializeField] private List<Peg> _pegs;
 
         public void Initialize()
         {
@@ -37,6 +39,14 @@ namespace TowerOfHanoi.Gameplay
                 float baseOffset = (_baseThickness * 2) + PegHeight;
                 peg.Pole.localPosition = new Vector3(0, baseOffset, 0);
             }
+        }
+
+        public bool EvaluateGoalPeg()
+        {
+            if (GoalPeg.Rings.Count == GameplayManager.Instance.RingsManager.Count)
+                return true;
+            else
+                return false;
         }
 
         private void ClearPegs()
