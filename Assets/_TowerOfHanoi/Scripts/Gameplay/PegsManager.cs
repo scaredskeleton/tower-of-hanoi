@@ -54,7 +54,7 @@ namespace TowerOfHanoi.Gameplay
                 _pegs[i].Pole.localPosition = polePosition;
 
                 Vector3 pegPosition = leftmostPosition + new Vector3(distanceBetweenPegs * i, 0, 0);
-                _pegs[i].transform.position = pegPosition;
+                _pegs[i].transform.localPosition = pegPosition;
 
                 _pegs[i].UpdateRingsSpawnpoint();
             }
