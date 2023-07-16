@@ -16,6 +16,7 @@ namespace TowerOfHanoi.Gameplay
         public int Count { get => _count; }
         public float Thickness { get => _thickness; }
         public float MinRadius { get => _minRadius; }
+        public float RadiusIncrement {  get => _radiusIncrement; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
         public Ring LastRing { get => Rings.Last(); }
 

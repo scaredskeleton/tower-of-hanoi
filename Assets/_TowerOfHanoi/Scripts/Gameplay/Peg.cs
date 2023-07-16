@@ -14,7 +14,12 @@ namespace TowerOfHanoi.Gameplay
         public Vector3 RingsHoverPoint { get; private set; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
 
-        private void Start() => SetRingsSpawnpoint();
+        public void UpdateRingsSpawnpoint()
+        {
+            float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness + _base.position.y;
+
+            RingsSpawnpoint = new Vector3(0, targetHeight, 0) + transform.position;
+        }
 
         public Vector3 GetPlacePoint(bool isReturning = false)
         {
@@ -46,13 +51,6 @@ namespace TowerOfHanoi.Gameplay
         public void ReturnRing(Ring ring) => ring.transform.position = GetPlacePoint(true);
 
         public void Clear() => Rings.Clear();
-
-        private void SetRingsSpawnpoint()
-        {
-            float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness + _base.position.y;
-
-            RingsSpawnpoint = new Vector3(0, targetHeight, 0) + transform.position;
-        }
 
         private void SetRingsHoverPoint()
         {

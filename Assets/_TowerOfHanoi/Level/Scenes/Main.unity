@@ -1109,9 +1109,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pegRadius: 0.3
-  _minBaseRadius: 3
   _baseThickness: 0.1
+  _baseRadiusOffset: 0.5
   _hoverPointOffset: 0.2
+  _pegsDistanceOffset: 0.5
   _pegs:
   - {fileID: 849772411}
   - {fileID: 1551479153}
