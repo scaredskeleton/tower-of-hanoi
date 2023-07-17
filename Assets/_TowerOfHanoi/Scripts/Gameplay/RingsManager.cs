@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TowerOfHanoi.Core;
 using UnityEngine;
@@ -11,42 +12,49 @@ namespace TowerOfHanoi.Gameplay
         [SerializeField] private float _thickness;
         [SerializeField] private float _minRadius;
         [SerializeField] private float _radiusIncrement;
-        [SerializeField] private Ring _ringPrefab;
+        [SerializeField] private List<Ring> _rings;
         
         public int Count { get => _count; }
         public float Thickness { get => _thickness; }
         public float MinRadius { get => _minRadius; }
         public float RadiusIncrement {  get => _radiusIncrement; }
-        public List<Ring> Rings { get; private set; } = new List<Ring>();
-        public Ring LastRing { get => Rings.Last(); }
+        public List<Ring> ActiveRings { get; private set; } = new List<Ring>();
+        public Ring LastRing { get => ActiveRings.Last(); }
+
+        private void Start()
+        {
+            for ( int i = 0; i < _rings.Count; i++ )
+            {
+                _rings[i].SetIndex(i);
+            }
+        }
 
         public void Initialize()
         {
-            if (Rings  == null || Rings.Count == 0)
-                GenerateRings();
+            if (ActiveRings  == null || ActiveRings.Count == 0)
+                SetActiveRings();
             else
             {
                 ClearRings();
-                GenerateRings();
+                SetActiveRings();
             }
         }
 
-        public void GenerateRings()
+        public void SetActiveRings()
         {
+            int startingIndex = _rings.Count - _count;
             for (int i = 0; i < _count; ++i)
             {
-                GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(CreateRingObject(i));
+                int ringIndex = startingIndex + i;
+                GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(SetRingActive(ringIndex));
             }
         }
 
-        private Ring CreateRingObject(int ringCount)
+        private Ring SetRingActive(int ringIndex)
         {
-            Ring ring = Instantiate(_ringPrefab);
-
-            ring.name = $"Ring #{ringCount + 1}";
-            SetRingRadius(ring, _count - ringCount);
-            ring.SetIndex(ringCount);
-            Rings.Add(ring);
+            Debug.Log(ringIndex);
+            Ring ring = _rings[ringIndex];
+            ActiveRings.Add(ring);
 
             return ring;
         }
@@ -57,15 +65,7 @@ namespace TowerOfHanoi.Gameplay
             ring.transform.localScale = new Vector3(radius, _thickness, radius);
         }
 
-        private void ClearRings()
-        {
-            foreach (Ring ring in Rings)
-            {
-                Destroy(ring.gameObject);
-            }
-
-            Rings.Clear();
-        }
+        private void ClearRings() => ActiveRings.Clear();
 
         public void UpdateRingsCount() => _count += GameData.GameLevel - 1;
     }

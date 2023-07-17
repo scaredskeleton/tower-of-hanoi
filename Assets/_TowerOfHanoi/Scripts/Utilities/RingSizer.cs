@@ -21,7 +21,7 @@ namespace TowerOfHanoi.Utilities
         private void OnValidate()
         {
             UpdateRingSize();
-            UpdateColliderSizeAndCenter();
+            UpdateColliderAndBounds();
         }
 
         private void UpdateRingSize()
@@ -30,16 +30,23 @@ namespace TowerOfHanoi.Utilities
             _renderer.SetBlendShapeWeight(2, outerRadiusNormalized * 100f);
 
             float innerRadiusNormalized = Normalize(_innerRadius, _minInnerRadius, _maxInnerRadius);
-            Debug.Log(innerRadiusNormalized);
             _renderer.SetBlendShapeWeight(1, innerRadiusNormalized * 100f);
 
             float thicknessNormalized = 1 - Normalize(_thickness, _minThickness, _maxThickness);
             _renderer.SetBlendShapeWeight(0, thicknessNormalized * 100f);
         }
 
-        private void UpdateColliderSizeAndCenter()
+        private void UpdateColliderAndBounds()
         {
-            _collider.center = new Vector3(0, 0, _thickness / 2f);
+            float lenght = _outerRadius * 2f;
+            float middle = _thickness / 2f;
+            
+            _collider.center = new Vector3(0, 0, middle);
+            _collider.size = new Vector3(lenght, lenght, _thickness); ;
+
+            Bounds bounds = _renderer.bounds;
+            bounds.center = transform.position + new Vector3(0, middle, 0);
+            bounds.size = new Vector3(lenght, _thickness, lenght);
         }
 
         private float Normalize(float value, float min, float max) => (value - min) / (max - min);

@@ -1,8 +1,12 @@
 using System.Linq;
+using TowerOfHanoi.Utilities;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
 {
+    [RequireComponent(typeof(SkinnedMeshRenderer))]
+    [RequireComponent(typeof(RingSizer))]
+    [RequireComponent(typeof(BoxCollider))]
     public class Ring : MonoBehaviour
     {
         public int Index { get; private set; }

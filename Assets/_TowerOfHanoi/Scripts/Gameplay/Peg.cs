@@ -16,7 +16,9 @@ namespace TowerOfHanoi.Gameplay
 
         public void UpdateRingsSpawnpoint()
         {
-            float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness + _base.localPosition.y;
+            float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness
+                - GameplayManager.Instance.RingsManager.Thickness
+                + _base.localPosition.y;
 
             RingsSpawnpoint = transform.position + new Vector3(0, targetHeight, 0);
         }
