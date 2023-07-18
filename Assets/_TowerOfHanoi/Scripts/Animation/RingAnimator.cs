@@ -10,9 +10,11 @@ namespace TowerOfHanoi.Animation
 
         [SerializeField] private float _lastWaypointOffset;
         [SerializeField] private CinemachinePath _activationPath;
-        [SerializeField] private float _hoverSpeed;
+        [SerializeField] private float _minHoverSpeed;
+        [SerializeField] private float _maxHoverSpeed;
         [SerializeField] private float _deltaHeight;
         [SerializeField] private float _spinSpeed;
+        [SerializeField] private float _moveSpeed;
 
         private CinemachineDollyCart _dollyCart;
         private Transform _transform;
@@ -27,7 +29,7 @@ namespace TowerOfHanoi.Animation
         public async Task PlayActivationAnimation()
         {
             AddTargetWaypoints();
-            await FloatUpAnimation(1f, 0.5f);
+            await FloatUpAnimation(0.8f, 0.5f);
             await HoverAnimation(3f);
             await UpdatePath();
             await HoverAnimation(5f);
@@ -38,7 +40,7 @@ namespace TowerOfHanoi.Animation
             _dollyCart.enabled = true;
             while (_dollyCart.m_Position < 1f)
             {
-                _dollyCart.m_Position += 0.8f * Time.deltaTime;
+                _dollyCart.m_Position += _moveSpeed * Time.deltaTime;
                 await Task.Yield();
             }
             _dollyCart.enabled = false;
@@ -46,9 +48,10 @@ namespace TowerOfHanoi.Animation
 
         private async Task HoverAnimation(float duration)
         {
+            float hoverSpeed = Random.Range(_minHoverSpeed, _maxHoverSpeed);
             while (duration > 0)
             {
-                Oscillate();
+                Oscillate(hoverSpeed);
                 duration -= Time.deltaTime;
                 await Task.Yield();
             }
@@ -56,20 +59,21 @@ namespace TowerOfHanoi.Animation
 
         private async Task FloatUpAnimation(float duration, float height)
         {
+            float hoverSpeed = Random.Range(_minHoverSpeed, _maxHoverSpeed);
             float t = duration;
             Vector3 targetPosition = _transform.position + new Vector3(0f, height, 0f);
             while (duration > 0)
             {
-                _transform.position = Vector3.Lerp(_transform.position, targetPosition, t - duration / t);
-                Oscillate();
+                _transform.position = Vector3.Lerp(_transform.position, targetPosition, (t - duration) / t);
+                Oscillate(hoverSpeed);
                 duration -= Time.deltaTime;
                 await Task.Yield();
             }
         }
 
-        private void Oscillate()
+        private void Oscillate(float hoverSpeed)
         {
-            float oscillationY = Mathf.Sin(Time.time * _hoverSpeed);
+            float oscillationY = Mathf.Sin(Time.time * hoverSpeed);
             _transform.position += new Vector3(0, oscillationY, 0) * _deltaHeight;
         }
 

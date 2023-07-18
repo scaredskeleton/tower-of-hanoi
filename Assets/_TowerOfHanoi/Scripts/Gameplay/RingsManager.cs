@@ -51,6 +51,7 @@ namespace TowerOfHanoi.Gameplay
                 Ring ring = SetRingActive(ringIndex);
                 GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(ring);
                 tasks[i] = ring.PlayPlaceAnimation();
+                await Task.Delay(300);
             }
 
             await Task.WhenAll(tasks);
