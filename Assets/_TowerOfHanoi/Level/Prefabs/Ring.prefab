@@ -88,8 +88,8 @@ SkinnedMeshRenderer:
   - 99.63768
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: 0, y: 0, z: 0.005}
-    m_Extent: {x: 0.03, y: 0.03, z: 0.005}
+    m_Center: {x: 0, y: 0, z: 0.1}
+    m_Extent: {x: 0.25, y: 0.25, z: 0.1}
   m_DirtyAABB: 0
 --- !u!65 &5796380059114255164
 BoxCollider:

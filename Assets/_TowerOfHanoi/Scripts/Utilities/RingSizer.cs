@@ -15,38 +15,40 @@ namespace TowerOfHanoi.Utilities
         private float _minThickness = 0f;
         private float _maxThickness = 1f;
 
-        private SkinnedMeshRenderer _renderer { get => GetComponent<SkinnedMeshRenderer>(); }
-        private BoxCollider _collider { get => GetComponent<BoxCollider>(); }
-
         private void OnValidate()
         {
-            UpdateRingSize();
-            UpdateColliderAndBounds();
+            var renderer = GetComponent<SkinnedMeshRenderer>();
+            UpdateRingSize(renderer);
+            UpdateColliderAndBounds(renderer);
         }
 
-        private void UpdateRingSize()
+        private void UpdateRingSize(SkinnedMeshRenderer renderer)
         {
             float outerRadiusNormalized = 1 - Normalize(_outerRadius, _minOuterRadius, _maxOuterRadius);
-            _renderer.SetBlendShapeWeight(2, outerRadiusNormalized * 100f);
+            renderer.SetBlendShapeWeight(2, outerRadiusNormalized * 100f);
 
             float innerRadiusNormalized = Normalize(_innerRadius, _minInnerRadius, _maxInnerRadius);
-            _renderer.SetBlendShapeWeight(1, innerRadiusNormalized * 100f);
+            renderer.SetBlendShapeWeight(1, innerRadiusNormalized * 100f);
 
             float thicknessNormalized = 1 - Normalize(_thickness, _minThickness, _maxThickness);
-            _renderer.SetBlendShapeWeight(0, thicknessNormalized * 100f);
+            renderer.SetBlendShapeWeight(0, thicknessNormalized * 100f);
         }
 
-        private void UpdateColliderAndBounds()
+        private void UpdateColliderAndBounds(SkinnedMeshRenderer renderer)
         {
             float lenght = _outerRadius * 2f;
-            float middle = _thickness / 2f;
-            
-            _collider.center = new Vector3(0, 0, middle);
-            _collider.size = new Vector3(lenght, lenght, _thickness); ;
+            Vector3 center = new Vector3(0, 0, _thickness / 2f);
+            Vector3 size = new Vector3(lenght, lenght, _thickness); ;
 
-            Bounds bounds = _renderer.bounds;
-            bounds.center = transform.position + new Vector3(0, middle, 0);
-            bounds.size = new Vector3(lenght, _thickness, lenght);
+            BoxCollider collider = GetComponent<BoxCollider>();
+            collider.center = center;
+            collider.size = size;
+
+            Bounds bounds = renderer.localBounds;
+            bounds.center = center;
+            bounds.size = size;
+            
+            renderer.localBounds = bounds;
         }
 
         private float Normalize(float value, float min, float max) => (value - min) / (max - min);
