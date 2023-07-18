@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5796380059114255164}
   - component: {fileID: 5796380059114255139}
   - component: {fileID: 5796380059114255165}
+  - component: {fileID: 7121311416156903340}
   m_Layer: 0
   m_Name: Ring
   m_TagString: Untagged
@@ -131,3 +132,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fe5914316ca7a489c9056c3fdbb3ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7121311416156903340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6679270518176386672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a9c787e5d1bbf48a389834c4a9641c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Path: {fileID: 0}
+  m_UpdateMethod: 0
+  m_PositionUnits: 2
+  m_Speed: 0
+  m_Position: 0

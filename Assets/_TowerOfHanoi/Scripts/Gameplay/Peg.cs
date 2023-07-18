@@ -21,6 +21,8 @@ namespace TowerOfHanoi.Gameplay
                 + _base.localPosition.y;
 
             RingsSpawnpoint = transform.position + new Vector3(0, targetHeight, 0);
+
+            SetRingsHoverPoint();
         }
 
         public Vector3 GetPlacePoint(bool isReturning = false)
@@ -38,10 +40,20 @@ namespace TowerOfHanoi.Gameplay
             return placePoint;
         }
 
+        public Vector3 GetHoverPoint()
+        {
+            int ringCount = Rings.Count;
+            float ringThickness = GameplayManager.Instance.RingsManager.Thickness + 0.075f;
+            float hoverPointY = RingsHoverPoint.y + ringThickness + (ringThickness * 2 * ringCount);
+            Vector3 hoverPoint = new Vector3(RingsHoverPoint.x, hoverPointY, RingsHoverPoint.z);
+
+            return hoverPoint;
+        }
+
         public void PlaceRing(Ring ring)
         {
-            ring.transform.position = GetPlacePoint();
-            ring.SetPeg(this);
+            //ring.transform.position = GetPlacePoint();
+            ring.CurrentPeg = this;
             Rings.Add(ring);
 
             if (this == GameplayManager.Instance.PegsManager.GoalPeg || ring == GameplayManager.Instance.RingsManager.LastRing)

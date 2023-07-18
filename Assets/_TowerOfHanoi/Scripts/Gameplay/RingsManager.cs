@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TowerOfHanoi.Core;
 using UnityEngine;
 
@@ -40,29 +41,28 @@ namespace TowerOfHanoi.Gameplay
             }
         }
 
-        public void SetActiveRings()
+        public async void SetActiveRings()
         {
             int startingIndex = _rings.Count - _count;
+            Task[] tasks = new Task[_count];
             for (int i = 0; i < _count; ++i)
             {
                 int ringIndex = startingIndex + i;
-                GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(SetRingActive(ringIndex));
+                Ring ring = SetRingActive(ringIndex);
+                GameplayManager.Instance.PegsManager.StartingPeg.PlaceRing(ring);
+                tasks[i] = ring.PlayPlaceAnimation();
             }
+
+            await Task.WhenAll(tasks);
         }
 
         private Ring SetRingActive(int ringIndex)
         {
-            Debug.Log(ringIndex);
             Ring ring = _rings[ringIndex];
+            ring.SetActive();
             ActiveRings.Add(ring);
 
             return ring;
-        }
-
-        private void SetRingRadius(Ring ring, int index)
-        {
-            float radius = _minRadius + (_radiusIncrement * index);
-            ring.transform.localScale = new Vector3(radius, _thickness, radius);
         }
 
         private void ClearRings() => ActiveRings.Clear();

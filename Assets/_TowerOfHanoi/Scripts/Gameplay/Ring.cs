@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading.Tasks;
+using TowerOfHanoi.Animation;
 using TowerOfHanoi.Utilities;
 using UnityEngine;
 
@@ -10,16 +12,19 @@ namespace TowerOfHanoi.Gameplay
     public class Ring : MonoBehaviour
     {
         public int Index { get; private set; }
-        public Peg CurrentPeg { get; private set; }
+        public Peg CurrentPeg { get; set; }
         public Peg TargetPeg { get; private set; }
+        public bool Active { get; private set; }
 
 
         private Transform _transform;
         private bool _isSelected;
+        private RingAnimator _animator;
 
         private void Start()
         {
             _transform = transform;
+            _animator = GetComponent<RingAnimator>();
         }
 
         private void Update()
@@ -56,9 +61,15 @@ namespace TowerOfHanoi.Gameplay
                 return false;
         }
 
-        public void SetPeg(Peg peg) => CurrentPeg = peg;
+        public void SetActive() => Active = true;
 
         private bool Equals(Ring last) => last.Index == Index;
+
+        public async Task PlayPlaceAnimation()
+        {
+            _animator.TargetPoint = CurrentPeg.GetHoverPoint();
+            await _animator.PlayActivationAnimation();
+        }
 
         private void MoveToMousePosition()
         {
