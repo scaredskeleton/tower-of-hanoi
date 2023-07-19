@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -10,32 +11,34 @@ namespace TowerOfHanoi.Gameplay
 
         public Transform Base { get => _base; }
         public Transform Pole { get => _pole; }
-        public Vector3 RingsSpawnpoint { get; private set; }
+        public Vector3 RingsStartPoint { get; private set; }
         public Vector3 RingsHoverPoint { get; private set; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
 
-        public void UpdateRingsSpawnpoint()
+        public void UpdateRingsStartPoint()
         {
             float targetHeight = GameplayManager.Instance.PegsManager.BaseThickness
                 - GameplayManager.Instance.RingsManager.Thickness
                 + _base.localPosition.y;
 
-            RingsSpawnpoint = transform.position + new Vector3(0, targetHeight, 0);
+            RingsStartPoint = transform.position + new Vector3(0, targetHeight, 0);
 
             SetRingsHoverPoint();
         }
 
-        public Vector3 GetPlacePoint(bool isReturning = false)
+        public Vector3 GetPlacePoint(bool isReturning = false, int index = 0)
         {
             int ringCount = Rings.Count;
 
             if (isReturning)
                 ringCount -= 1;
+            else if (index > 0)
+                ringCount = index;
 
             float ringThickness = GameplayManager.Instance.RingsManager.Thickness;
 
-            float placePointY = RingsSpawnpoint.y + ringThickness + (ringThickness * 2 * ringCount);
-            Vector3 placePoint = new Vector3(RingsSpawnpoint.x, placePointY, RingsSpawnpoint.z);
+            float placePointY = RingsStartPoint.y + ringThickness + (ringThickness * 2 * ringCount);
+            Vector3 placePoint = new Vector3(RingsStartPoint.x, placePointY, RingsStartPoint.z);
 
             return placePoint;
         }
@@ -50,14 +53,19 @@ namespace TowerOfHanoi.Gameplay
             return hoverPoint;
         }
 
-        public void PlaceRing(Ring ring)
+        public async Task PlaceRing(Ring ring)
         {
-            //ring.transform.position = GetPlacePoint();
-            ring.CurrentPeg = this;
-            Rings.Add(ring);
+            AddRing(ring);
+            await ring.Drop();
 
             if (this == GameplayManager.Instance.PegsManager.GoalPeg || ring == GameplayManager.Instance.RingsManager.LastRing)
                 GameplayManager.Instance.CheckIfFinished();
+        }
+
+        public void AddRing(Ring ring)
+        {
+            ring.CurrentPeg = this;
+            Rings.Add(ring);
         }
 
         public void RemoveRing(Ring ring) => Rings.Remove(ring);

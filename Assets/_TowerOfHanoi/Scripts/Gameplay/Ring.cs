@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using TowerOfHanoi.Animation;
 using TowerOfHanoi.Utilities;
@@ -36,11 +37,11 @@ namespace TowerOfHanoi.Gameplay
             }
         }
 
-        public void PlaceToNearestPeg()
+        public async void PlaceToNearestPeg()
         {
             CurrentPeg.RemoveRing(this);
-            TargetPeg.PlaceRing(this);
             _isSelected = false;
+            await TargetPeg.PlaceRing(this);
         }
 
         public void ReturnToCurrentPeg()
@@ -65,10 +66,29 @@ namespace TowerOfHanoi.Gameplay
 
         private bool Equals(Ring last) => last.Index == Index;
 
-        public async Task PlayPlaceAnimation()
+        public async Task PlayActivationAnimation()
         {
-            _animator.TargetPoint = CurrentPeg.GetHoverPoint();
-            await _animator.PlayActivationAnimation();
+            _animator.HoverPoint = CurrentPeg.GetHoverPoint();
+            await _animator.PlayActivationSequence();
+        }
+
+        public async Task PlayHoverAnimation(CancellationTokenSource source = null)
+        {
+            _animator.PlacePoint = CurrentPeg.GetHoverPoint();
+            await _animator.PlayHoverSequence(source);
+        }
+
+        public async Task PlayTransferAnimation()
+        {
+            _animator.HoverPoint = CurrentPeg.GetHoverPoint();
+            await _animator.PlayTransferSequence();
+        }
+
+        public async Task Drop()
+        {
+            _animator.PlacePoint = CurrentPeg.GetPlacePoint();
+            _animator.HoverPoint = CurrentPeg.GetHoverPoint();
+            await _animator.PlayDropSequence();
         }
 
         private void MoveToMousePosition()
