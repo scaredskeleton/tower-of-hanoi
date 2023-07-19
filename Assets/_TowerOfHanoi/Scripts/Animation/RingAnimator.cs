@@ -33,7 +33,7 @@ namespace TowerOfHanoi.Animation
         {
             AddTargetWaypoints();
             await FloatUpAnimation(0.8f, 0.5f);
-            await HoverAnimation(3f);
+            await HoverAnimation(2f);
             await UpdatePath();
             await HoverAnimation(0.2f);
         }
