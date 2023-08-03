@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
@@ -47,17 +48,44 @@ namespace TowerOfHanoi.Gameplay
 
             for (int i = 0; i < _pegs.Count; i++)
             {
-                _pegs[i].Base.localScale = baseScale;
-                _pegs[i].Base.localPosition = basePosition;
+                Peg peg = _pegs[i];
+                //peg.Base.localScale = baseScale;
+                //peg.Base.localPosition = basePosition;
 
-                _pegs[i].Pole.localScale = poleScale;
-                _pegs[i].Pole.localPosition = polePosition;
+                //peg.Pole.localScale = poleScale;
+                //peg.Pole.localPosition = polePosition;
+
+                //Vector3 pegPosition = leftmostPosition + new Vector3(distanceBetweenPegs * i, 0, 0);
+                //peg.transform.localPosition = pegPosition;
+
+                peg.Animator.BaseSize = baseScale;
+                peg.Animator.BaseLocalPosition = basePosition;
+
+                peg.Animator.PoleSize = poleScale;
+                peg.Animator.PoleLocalPosition = polePosition;
 
                 Vector3 pegPosition = leftmostPosition + new Vector3(distanceBetweenPegs * i, 0, 0);
-                _pegs[i].transform.localPosition = pegPosition;
+                peg.Animator.TargetPostion = pegPosition;
 
-                _pegs[i].UpdateRingsStartPoint();
+                peg.UpdateRingsStartPoint();
             }
+        }
+
+        public async Task PlayPegsAnimation()
+        {
+            Task[] tasks = new Task[_pegs.Count];
+            for (int i = 0; i < _pegs.Count;i++)
+            {
+                tasks[i] = _pegs[i].Animator.PlayTransformationSequence();
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        public void UpdatePeg()
+        {
+            foreach (Peg peg in _pegs)
+                peg.UpdateRingsStartPoint();
         }
 
         public bool EvaluateGoalPeg()

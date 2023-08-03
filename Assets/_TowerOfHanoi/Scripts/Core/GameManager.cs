@@ -8,6 +8,7 @@ namespace TowerOfHanoi.Core
         public static GameManager Instance { get; private set; }
 
         [SerializeField] GameObject _mainMenuCanvas;
+        [SerializeField] GameObject _endScreenCanvas;
          
         private void Awake()
         {
@@ -25,5 +26,9 @@ namespace TowerOfHanoi.Core
             GameplayManager.Instance.Play();
             _mainMenuCanvas.SetActive(false);
         }
+
+        public void GameFinished() => _endScreenCanvas.SetActive(true);
+
+        public void ExitGame() => Application.Quit();
     }
 }

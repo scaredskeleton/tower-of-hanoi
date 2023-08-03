@@ -16,7 +16,7 @@ namespace TowerOfHanoi.Gameplay
         public Peg CurrentPeg { get; set; }
         public Peg TargetPeg { get; private set; }
         public bool Active { get; private set; }
-
+        public bool CanBeSelected { get; private set; }
 
         private Transform _transform;
         private bool _isSelected;
@@ -26,22 +26,19 @@ namespace TowerOfHanoi.Gameplay
         {
             _transform = transform;
             _animator = GetComponent<RingAnimator>();
-        }
-
-        private void Update()
-        {
-            if (_isSelected)
-            {
-                MoveToMousePosition();
-                FindNearestPeg();
-            }
+            CanBeSelected = true;
         }
 
         public async void PlaceToNearestPeg()
         {
             CurrentPeg.RemoveRing(this);
             _isSelected = false;
+
+            await PlayPlaceAnimation();
+
             await TargetPeg.PlaceRing(this);
+
+            CanBeSelected = true;
         }
 
         public void ReturnToCurrentPeg()
@@ -50,7 +47,23 @@ namespace TowerOfHanoi.Gameplay
             _isSelected = false;
         }
 
-        public void Selected() => _isSelected = true;
+        public async void Selected()
+        {
+            if (!CanBeSelected)
+                return;
+
+            _isSelected = true;
+            CanBeSelected = false;
+            
+            await PlaySelectionAnimation();
+            
+            while (_isSelected)
+            {
+                FindNearestPeg();
+                MoveToMousePosition();
+                await Task.Yield();
+            }
+        }
 
         public void SetIndex(int index) => Index = index;
 
@@ -65,6 +78,18 @@ namespace TowerOfHanoi.Gameplay
         public void SetActive() => Active = true;
 
         private bool Equals(Ring last) => last.Index == Index;
+
+        public async Task PlayPlaceAnimation()
+        {
+            _animator.HoverPoint = TargetPeg.RingsHoverPoint;
+            await _animator.PlayPlaceSequence();
+        }
+
+        public async Task PlaySelectionAnimation()
+        {
+            _animator.HoverPoint = CurrentPeg.RingsHoverPoint;
+            await _animator.PlaySelectionSequence();
+        }
 
         public async Task PlayActivationAnimation()
         {
@@ -94,12 +119,13 @@ namespace TowerOfHanoi.Gameplay
         private void MoveToMousePosition()
         {
             Camera camera = GameplayManager.Instance.GameplayCamera;
-            float posZ = camera.WorldToScreenPoint(_transform.position).z;
+            float posZ = camera.WorldToScreenPoint(TargetPeg.transform.position).z;
 
             Vector3 screenPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, posZ);
             Vector3 mousePos = camera.ScreenToWorldPoint(screenPos);
 
-            _transform.position = mousePos;
+            Vector3 target = new Vector3(mousePos.x, CurrentPeg.RingsHoverPoint.y + 0.1f, mousePos.z);
+            _transform.position = Vector3.Lerp(_transform.position, target, 6 * Time.deltaTime);
         }
 
         private void FindNearestPeg()

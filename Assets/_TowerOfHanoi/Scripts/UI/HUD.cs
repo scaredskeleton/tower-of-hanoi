@@ -8,16 +8,6 @@ namespace TowerOfHanoi.Gameplay
         [SerializeField] private TextMeshProUGUI _moveCounter;
         [SerializeField] private TextMeshProUGUI _optimalMoveCounter;
 
-        private void OnEnable()
-        {
-            
-        }
-
-        private void OnDisable()
-        {
-            
-        }
-
         public void Initialize()
         {
             UpdateMoveCounter();

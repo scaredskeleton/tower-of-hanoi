@@ -38,6 +38,11 @@ namespace TowerOfHanoi.Animation
             await HoverAnimation(0.2f);
         }
 
+        public async Task PlaySelectionSequence()
+        {
+            await FloatUpAnimation(0.25f, HoverPoint.y - _transform.position.y);
+        }
+
         public async Task PlayHoverSequence(CancellationTokenSource source = null)
         {
             await FloatUpAnimation(1f, HoverPoint.y - _transform.position.y);
@@ -49,10 +54,15 @@ namespace TowerOfHanoi.Animation
             await MoveToStartingHoverAnimation();
         }
 
+        public async Task PlayPlaceSequence()
+        {
+            await MoveToHoverPointAnimation();
+        }
+
         public async Task PlayDropSequence()
         {
             float t = 0;
-            while (_transform.position.y > PlacePoint.y)
+            while (Vector3.Distance(_transform.position, PlacePoint) > 0)
             {
                 t += _moveSpeed * Time.deltaTime;
                 _transform.position = Vector3.Lerp(_transform.position, PlacePoint, t);
@@ -105,6 +115,17 @@ namespace TowerOfHanoi.Animation
             while (_transform.position.x > HoverPoint.x)
             {
                 t += _moveSpeed * Time.deltaTime;
+                _transform.position = Vector3.Lerp(_transform.position, HoverPoint, t);
+                await Task.Yield();
+            }
+        }
+
+        private async Task MoveToHoverPointAnimation()
+        {
+            float t = 0;
+            while (Vector3.Distance(_transform.position, HoverPoint) > 0)
+            {
+                t += _moveSpeed * 1.5f * Time.deltaTime;
                 _transform.position = Vector3.Lerp(_transform.position, HoverPoint, t);
                 await Task.Yield();
             }

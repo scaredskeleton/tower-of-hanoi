@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using TowerOfHanoi.Core;
@@ -12,18 +11,23 @@ namespace TowerOfHanoi.Gameplay
 {
     public class RingsManager : MonoBehaviour
     {
-        [SerializeField, Range(3, 8)] private int _count = 3;
-        [SerializeField] private float _thickness;
-        [SerializeField] private float _minRadius;
-        [SerializeField] private float _radiusIncrement;
-        [SerializeField] private List<Ring> _rings;
-        
         public int Count { get => _count; }
         public float Thickness { get => _thickness; }
         public float MinRadius { get => _minRadius; }
         public float RadiusIncrement {  get => _radiusIncrement; }
         public List<Ring> ActiveRings { get; private set; } = new List<Ring>();
         public Ring LastRing { get => ActiveRings.Last(); }
+        public Ring ActivatedRing { get; private set; }
+        public CancellationTokenSource[] HoverCancellationSources { get; private set; }
+
+        [SerializeField, Range(3, 8)] private int _count = 3;
+        [SerializeField] private float _thickness;
+        [SerializeField] private float _minRadius;
+        [SerializeField] private float _radiusIncrement;
+        [SerializeField] private List<Ring> _rings;
+
+        private int _startingIndex;
+        private int _activeCount;
 
         private void Start()
         {
@@ -44,49 +48,59 @@ namespace TowerOfHanoi.Gameplay
             }
         }
 
-        public async void UpdateActiveRings()
+        public void UpdateActiveRings()
         {
-            int startingIndex = _rings.Count - _count;
-            int activeCount = ((GameData.GameLevel == 1) ? 0 : 1) * (_count - 1);
-            Task[] activationTasks = new Task[(GameData.GameLevel == 1) ? 3 : 1];
-            Task[] hoverTasks = new Task[activeCount];
-            Ring activatedRing = null;
+            _startingIndex = _rings.Count - _count;
+            _activeCount = ((GameData.GameLevel == 1) ? 0 : 1) * (_count - 1);
             for (int i = 0; i < _count; ++i)
             {
-                int ringIndex = startingIndex + i;
-                activatedRing = SetRingActive(ringIndex);
-                GameplayManager.Instance.PegsManager.StartingPeg.AddRing(activatedRing);
+                int ringIndex = _startingIndex + i;
+                ActivatedRing = SetRingActive(ringIndex);
+            }
+        }
 
-                if (activatedRing.Index > startingIndex && activeCount > 0)
+        public async Task PlayActivationAnimation()
+        {
+            GameplayManager.Instance.PegsManager.StartingPeg.Clear();
+
+            Task[] activationTasks = new Task[(GameData.GameLevel == 1) ? 3 : 1];
+            for (int i = 0; i < activationTasks.Length; ++i)
+            {
+                GameplayManager.Instance.PegsManager.StartingPeg.AddRing(ActiveRings[i]);
+                if (ActiveRings[i].Index > _startingIndex && _activeCount > 0)
                     continue;
                 else
-                    activationTasks[i] = activatedRing.PlayActivationAnimation();
-                    
+                    activationTasks[i] = ActiveRings[i].PlayActivationAnimation();
+
                 await Task.Delay(300);
             }
 
-            var hoverCancellationSources = new CancellationTokenSource[hoverTasks.Length];
+            await Task.WhenAll(activationTasks);
+        }
+
+        public async Task PlayHoveringAnimation()
+        {
+            Task[] hoverTasks = new Task[_activeCount];
+            HoverCancellationSources = new CancellationTokenSource[hoverTasks.Length];
             for (int i = 0; i < hoverTasks.Length; ++i)
             {
-                hoverCancellationSources[i] = new CancellationTokenSource();
+                HoverCancellationSources[i] = new CancellationTokenSource();
 
-                hoverTasks[i] = ActiveRings[ActiveRings.Count - 1 -i].PlayHoverAnimation(hoverCancellationSources[i]);
+                hoverTasks[i] = ActiveRings[ActiveRings.Count - 1 - i].PlayHoverAnimation(HoverCancellationSources[i]);
                 await Task.Delay(100);
             }
-            
-            await Task.WhenAll(activationTasks);
+        }
 
-            TaskUtilities.CancelTasks(hoverCancellationSources);
+        public void FinishHover() => TaskUtilities.CancelTasks(HoverCancellationSources);
 
-            await Task.WhenAll(hoverTasks);
+        public void DisposeHoverTokens() => TaskUtilities.DisposeCancellationSources(HoverCancellationSources);
 
-            TaskUtilities.DisposeCancellationSources(hoverCancellationSources);
-            
+        public async Task PlayTransferAnimation()
+        {
             GameplayManager.Instance.PegsManager.StartingPeg.Clear();
 
-
-            Task[] transferTasks = new Task[activeCount];
-            GameplayManager.Instance.PegsManager.StartingPeg.AddRing(activatedRing);
+            Task[] transferTasks = new Task[_activeCount];
+            GameplayManager.Instance.PegsManager.StartingPeg.AddRing(ActivatedRing);
             for (int i = 0; i < transferTasks.Length; ++i)
             {
                 Ring ring = ActiveRings[i + 1];
@@ -96,11 +110,9 @@ namespace TowerOfHanoi.Gameplay
             }
 
             await Task.WhenAll(transferTasks);
-
-            DropRings();
         }
 
-        private async void DropRings()
+        public async Task DropRings()
         {
             GameplayManager.Instance.PegsManager.StartingPeg.Clear();
 
@@ -125,6 +137,6 @@ namespace TowerOfHanoi.Gameplay
 
         private void ClearRings() => ActiveRings.Clear();
 
-        public void UpdateRingsCount() => _count += GameData.GameLevel - 1;
+        public void UpdateRingsCount() => _count++;
     }
 }

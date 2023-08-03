@@ -1,19 +1,28 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TowerOfHanoi.Animation;
 using UnityEngine;
 
 namespace TowerOfHanoi.Gameplay
 {
     public class Peg : MonoBehaviour
     {
-        [SerializeField] private Transform _base;
-        [SerializeField] private Transform _pole;
-
         public Transform Base { get => _base; }
         public Transform Pole { get => _pole; }
+        public PegAnimator Animator { get; private set; }
         public Vector3 RingsStartPoint { get; private set; }
         public Vector3 RingsHoverPoint { get; private set; }
         public List<Ring> Rings { get; private set; } = new List<Ring>();
+
+        [SerializeField] private Transform _base;
+        [SerializeField] private Transform _pole;
+
+        private void Start()
+        {
+            Animator = GetComponent<PegAnimator>();
+            Animator.Base = _base;
+            Animator.Pole = _pole;
+        }
 
         public void UpdateRingsStartPoint()
         {

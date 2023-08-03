@@ -32,6 +32,7 @@ namespace TowerOfHanoi.Gameplay
             PegsManager = GetComponent<PegsManager>();
             RingsManager = GetComponent<RingsManager>();
             PlayerInputs = new PlayerInputs();
+            _mouseInputs.enabled = false;
         }
 
         private void OnEnable()
@@ -44,12 +45,33 @@ namespace TowerOfHanoi.Gameplay
             PlayerInputs.Disable();
         }
 
-        public void Play()
+        public async void Play()
         {
             MoveCounter.Reset();
             PegsManager.Initialize();
             RingsManager.Initialize();
+
+            if (GameData.GameLevel == 1)
+            {
+                await RingsManager.PlayActivationAnimation();
+                await RingsManager.DropRings();
+            }
+            else
+            {
+                await RingsManager.PlayHoveringAnimation();
+                await PegsManager.PlayPegsAnimation();
+                PegsManager.UpdatePeg();
+                await RingsManager.PlayActivationAnimation();
+                RingsManager.FinishHover();
+                RingsManager.DisposeHoverTokens();
+                await RingsManager.PlayTransferAnimation();
+                await RingsManager.DropRings();
+            }
+
+            HUD.gameObject.SetActive(true);
             HUD.Initialize();
+
+            _mouseInputs.enabled = true;
         }
 
         public bool IsLegalMove()
@@ -79,7 +101,7 @@ namespace TowerOfHanoi.Gameplay
             {
                 Ring ring = hit.transform.GetComponent<Ring>();
 
-                if (ring != null && ring.IsToppestRing())
+                if (ring != null && ring.IsToppestRing() && ring.CanBeSelected)
                 {
                     SelectedRing = ring;
                     SelectedRing.Selected();
@@ -120,7 +142,13 @@ namespace TowerOfHanoi.Gameplay
 
         public void LevelFinished()
         {
-            NextLevel();
+            if (GameData.GameLevel == GameData.MaxGameLevel)
+                GameManager.Instance.GameFinished();
+            else
+            {
+                _mouseInputs.enabled = false;
+                NextLevel();
+            }
         }
 
         public void NextLevel()
